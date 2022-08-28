@@ -12,16 +12,28 @@ let url;
 // api 호출 함수를 부른다
 
 const getNews = async () => {
-  let header = new Headers({
-    "x-api-key": "3A_4IzBS_nAdTsnC9sYcaYQRj1Bcr6rwrDMLFO6OyGI",
-  });
+  try {
+    let header = new Headers({
+      "x-api-key": "3A_4IzBS_nAdTsnC9sYcaYQRj1Bcr6rwrDMLFO6OyGI",
+    });
 
-  let response = await fetch(url, { headers: header });
-  let data = await response.json();
-  news = data.articles;
-  console.log(news);
+    let response = await fetch(url, { headers: header });
+    let data = await response.json();
+    if (response.status == 200) {
+      if (data.total_hits == 0) {
+        throw new Error("검색된 결과값이 없습니다.");
+      }
+      news = data.articles;
+      console.log(news);
 
-  render();
+      render();
+    } else {
+      throw new Error(data.message);
+    }
+  } catch (error) {
+    console.log("Error : ", error.message);
+    errorRender(error.message);
+  }
 };
 
 const getLatestNews = async () => {
@@ -95,6 +107,35 @@ const openSearchBox = () => {
   } else {
     inputArea.style.display = "inline";
   }
+};
+
+const errorRender = (message) => {
+  let errorHTML = `<section class="page_404">
+	<div class="container">
+		<div class="row">	
+		<div class="col-sm-12 ">
+		<div class="col-sm-10 col-sm-offset-1 text-center">
+		<div class="four_zero_four_bg">
+			<h1 class="text-center "></h1>
+		
+		
+		</div>
+		
+		<div class="contant_box_404">
+		
+		
+		<a href="" onClick="${getNewsByTopic(news)}" class="link_404">Go to Back</a>
+	</div>
+		</div>
+		</div>
+		</div>
+	</div>
+</section>
+
+<div class="alert alert-danger text-center" role="alert">
+  ${message}
+  </div>`;
+  document.getElementById("news-board").innerHTML = errorHTML;
 };
 
 searchButton.addEventListener("click", getNewsByKeyword);
