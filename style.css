@@ -9,7 +9,7 @@
   width: 430px;
 }
 
-/* .side-menu {
+.side-menu {
   height: 100%;
   width: 0;
   position: fixed;
@@ -47,7 +47,35 @@
 .side-menu-list button:hover {
   background-color: beige;
   border-radius: 3px;
-} */
+}
+.search-button {
+  background-color: rgb(86, 123, 149);
+  border: 1px solid rgb(50, 104, 145);
+  color: rgb(255, 255, 255);
+  height: 33px;
+  border-radius: 3px;
+}
+#search-input {
+  border: 1px solid rgb(226, 226, 226);
+  border-radius: 3px;
+  height: 33px;
+}
+
+#input-area {
+  display: none;
+}
+
+.title {
+  color: black;
+  font-weight: bold;
+  font-size: 20px;
+  text-decoration: none;
+}
+
+.title:hover {
+  text-decoration: underline;
+  color: blue;
+}
 
 .menus {
   margin-top: 1em;
@@ -121,4 +149,14 @@
 }
 .contant_box_404 {
   margin-top: -50px;
+}
+
+.pagination {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.page-link {
+  color: beige;
 }

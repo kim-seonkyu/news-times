@@ -1,5 +1,6 @@
 let news = [];
-
+let page = 1;
+let total_pages = 0;
 let menus = document.querySelectorAll(".menus button");
 menus.forEach((menu) =>
   menu.addEventListener("click", (event) => getNewsByTopic(event))
@@ -16,17 +17,22 @@ const getNews = async () => {
     let header = new Headers({
       "x-api-key": "3A_4IzBS_nAdTsnC9sYcaYQRj1Bcr6rwrDMLFO6OyGI",
     });
-
+    url.searchParams.set("page", page);
     let response = await fetch(url, { headers: header });
     let data = await response.json();
     if (response.status == 200) {
       if (data.total_hits == 0) {
         throw new Error("검색된 결과값이 없습니다.");
       }
+      console.log("data : ", data);
       news = data.articles;
-      console.log(news);
+      total_pages = data.total_pages;
+      page = data.page;
+      console.log("news : ", news);
 
       render();
+
+      pageNation();
     } else {
       throw new Error(data.message);
     }
@@ -77,9 +83,7 @@ const render = () => {
       />
     </div>
     <div class="col-lg-8">
-      <h2>
-        ${item.title}
-      </h2>
+      <a class="title" target="_blank" href="${item.link}">${item.title}</a>
       <p>
         ${
           item.summary == null || item.summary == ""
@@ -117,14 +121,9 @@ const errorRender = (message) => {
 		<div class="col-sm-10 col-sm-offset-1 text-center">
 		<div class="four_zero_four_bg">
 			<h1 class="text-center "></h1>
-		
-		
-		</div>
-		
-		<div class="contant_box_404">
-		
-		
-		<a href="" onClick="${getNewsByTopic(news)}" class="link_404">Go to Back</a>
+		</div>		
+		<div class="contant_box_404">	
+		<a href="" onClick="${getNewsByTopic(news)}" class="link_404">Go to Home</a>
 	</div>
 		</div>
 		</div>
@@ -138,13 +137,61 @@ const errorRender = (message) => {
   document.getElementById("news-board").innerHTML = errorHTML;
 };
 
+const pageNation = () => {
+  let pagenationHTML = "";
+  // total_pages
+  // page
+  //page group
+  let pageGroup = Math.ceil(page / 5);
+  // last
+  let last = pageGroup * 5;
+  // first
+  let first = last - 4;
+  // first ~ last
+
+  // total page 3일 경우 3개의 페이지만 프린트 하는 법
+
+  // << >> 버튼 만들기
+
+  pagenationHTML = `<li class="page-item">
+  <a class="page-link" href="#" aria-label="Previous" onClick="moveToPage(${
+    page - 1
+  })">
+    <span aria-hidden="true">&lt;</span>
+  </a>
+</li>`;
+
+  for (let i = first; i <= last; i++) {
+    pagenationHTML += `<li class="page-item ${
+      page == i ? "active" : ""
+    }"><a class="page-link" href="#" onClick="moveToPage(${i})">${i}</a></li>`;
+  }
+
+  pagenationHTML += `<li class="page-item">
+  <a class="page-link" href="#" aria-label="Next" onClick="moveToPage(${
+    page + 1
+  })">
+    <span aria-hidden="true">&gt;</span>
+  </a>
+</li>`;
+
+  document.querySelector(".pagination").innerHTML = pagenationHTML;
+};
+
+const moveToPage = (pageNum) => {
+  // 1 이동하고 싶은 페이지를 알아야함
+  page = pageNum;
+  // 2 이동하고 싶은 페이지를 가지고 api 다시 호출
+  getNews();
+};
+
 searchButton.addEventListener("click", getNewsByKeyword);
 getLatestNews();
 
-// const openNav = () => {
-//   document.getElementById("mySidenav").style.width = "250px";
-// };
+const openNav = () => {
+  document.getElementById("mySidenav").style.width = "250px";
+};
 
-// const closeNav = () => {
-//   document.getElementById("mySidenav").style.width = "0";
-// };
+const closeNav = () => {
+  document.getElementById("mySidenav").style.width = "0";
+};
