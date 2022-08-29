@@ -1,14 +1,66 @@
+.head-line-section {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+.icon-button {
+  padding: 8px 9px 9px;
+  margin-top: 5px;
+}
+.icon-button:hover {
+  background-color: beige;
+}
+.head-line-icon i:first-child {
+  display: none;
+}
 .head-line {
-  margin-top: 1em;
   display: flex;
   justify-content: center;
-  align-items: center;
+  margin-top: 10px;
 }
-
 .head-line svg {
-  width: 430px;
+  max-width: 430px;
+  margin: 0px 20px;
 }
-
+.menus {
+  display: flex;
+  justify-content: center;
+  padding: 5px 0 4px;
+  border-top: 1px solid rgb(235, 235, 235);
+  border-bottom: 4px double black;
+  flex-wrap: wrap;
+}
+.menus button {
+  margin: 5px;
+  border: none;
+  background: none;
+}
+.menus button:hover {
+  background-color: beige;
+  border-radius: 3px;
+}
+.news {
+  display: flex;
+  padding: 1em;
+  border-bottom: 2px solid black;
+}
+.news-img {
+  max-width: 100%;
+  max-height: 250px;
+  margin-right: 1em;
+  text-align: center;
+}
+.title {
+  font-size: 20pt;
+  text-decoration: none;
+  color: black;
+  font-weight: bold;
+  margin-top: 2em;
+}
+.title:hover {
+  text-decoration: underline;
+  color: blue;
+}
 .side-menu {
   height: 100%;
   width: 0;
@@ -64,55 +116,32 @@
 #input-area {
   display: none;
 }
-
-.title {
-  color: black;
-  font-weight: bold;
-  font-size: 20px;
-  text-decoration: none;
+@media screen and (max-width: 63rem) {
+  .head-line-icon i:first-child {
+    display: inline;
+  }
+  .menus {
+    display: none;
+  }
 }
-
-.title:hover {
-  text-decoration: underline;
-  color: blue;
+.pagenation-nav {
+  display: flex;
+  justify-content: center;
 }
-
-.menus {
+.pagination {
   margin-top: 1em;
-  display: flex;
-  justify-content: center;
-  flex-wrap: wrap;
-  border-top: 1px solid #ebebeb;
-  border-bottom: 4px double #000;
 }
-
-.menus button {
-  border: none;
-  background: none;
-  margin: 5px;
+.page-item.active .page-link {
+  background-color: burlywood;
+  color: white;
+  border-color: burlywood;
 }
-
-.menus button:hover {
-  background-color: beige;
+.page-link {
+  color: burlywood;
 }
-
-.news-img-size {
-  max-width: 100%;
-  max-height: 250px;
+.col-lg-8 {
+  margin-top: 1em;
 }
-
-.news {
-  padding: 15px;
-  border-bottom: 2px solid black;
-}
-
-.error {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  flex-direction: column;
-}
-
 /* image  */
 .page_404 {
   padding: 40px 0;
@@ -149,14 +178,4 @@
 }
 .contant_box_404 {
   margin-top: -50px;
-}
-
-.pagination {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-
-.page-link {
-  color: beige;
 }

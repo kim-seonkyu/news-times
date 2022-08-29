@@ -17,6 +17,7 @@
     <div class="side-menu" id="mySidenav">
       <button class="closebtn" onclick="closeNav()">&times;</button>
       <div class="side-menu-list" id="menu-list">
+        <button>News</button>
         <button>Sport</button>
         <button>Tech</button>
         <button>World</button>
@@ -35,15 +36,14 @@
       </div>
     </div>
 
-    <i class="fas fa-bars hide icon-button" onclick="openNav()"></i>
-
     <section class="container">
-      <section>
-        <div>
+      <div class="head-line-section">
+        <div class="head-line-icon">
+          <i class="fas fa-bars hide icon-button" onclick="openNav()"></i>
           <i class="fas fa-search icon-button" onclick="openSearchBox()"></i>
           <span id="input-area">
             <input type="text" id="search-input" placeholder="search" />
-            <button id="search-button">Go</button>
+            <button class="search-button" onclick="searchNews()">Go</button>
           </span>
         </div>
         <div class="head-line">
@@ -53,7 +53,8 @@
             ></path>
           </svg>
         </div>
-        <div class="menus">
+
+        <div class="menus" id="menu-list">
           <button>News</button>
           <button>Sport</button>
           <button>Tech</button>
@@ -71,10 +72,10 @@
           <button>Gaming</button>
           <button>Energy</button>
         </div>
-      </section>
+      </div>
 
       <section id="news-board"></section>
-      <nav aria-label="Page navigation example">
+      <nav aria-label="Page navigation example" class="pagenation-nav">
         <ul class="pagination"></ul>
       </nav>
     </section>

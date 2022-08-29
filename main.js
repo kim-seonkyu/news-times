@@ -1,107 +1,65 @@
-let news = [];
+const API_KEY = "3A_4IzBS_nAdTsnC9sYcaYQRj1Bcr6rwrDMLFO6OyGI";
+let articles = [];
 let page = 1;
-let total_pages = 0;
-let menus = document.querySelectorAll(".menus button");
-menus.forEach((menu) =>
-  menu.addEventListener("click", (event) => getNewsByTopic(event))
+let totalPage = 1;
+let url = new URL(
+  "https://api.newscatcherapi.com/v2/latest_headlines?countries=KR&page_size=10"
 );
-
-let searchButton = document.getElementById("search-button");
-let url;
-
-// 각 함수에서 필요한 url을 만든다
-// api 호출 함수를 부른다
+let menus = document.querySelectorAll("#menu-list button");
+menus.forEach((menu) =>
+  menu.addEventListener("click", (e) => getNewsByTopic(e))
+);
 
 const getNews = async () => {
   try {
-    let header = new Headers({
-      "x-api-key": "3A_4IzBS_nAdTsnC9sYcaYQRj1Bcr6rwrDMLFO6OyGI",
-    });
-    url.searchParams.set("page", page);
+    let header = new Headers();
+    header.append("x-api-key", API_KEY);
+    url.searchParams.set("page", page); // 8.page를 달아준다
     let response = await fetch(url, { headers: header });
     let data = await response.json();
     if (response.status == 200) {
       if (data.total_hits == 0) {
-        throw new Error("검색된 결과값이 없습니다.");
+        console.log("A", data);
+        page = 0;
+        totalPage = 0;
+        renderPagenation();
+        throw new Error(data.status);
       }
-      console.log("data : ", data);
-      news = data.articles;
-      total_pages = data.total_pages;
-      page = data.page;
-      console.log("news : ", news);
-
+      console.log("B", data);
+      articles = data.articles;
+      console.log("articles", articles);
+      totalPage = data.total_pages;
       render();
-
-      pageNation();
+      renderPagenation();
     } else {
+      page = 0;
+      totalPage = 0;
+      renderPagenation();
       throw new Error(data.message);
     }
-  } catch (error) {
-    console.log("Error : ", error.message);
-    errorRender(error.message);
+  } catch (e) {
+    console.log("에러객체", e.name);
+    errorRender(e.message);
+    page = 0;
+    totalPage = 0;
+    renderPagenation();
   }
 };
-
-const getLatestNews = async () => {
+const getLatestNews = () => {
+  page = 1; // 9. 새로운거 search마다 1로 리셋
   url = new URL(
-    `https://api.newscatcherapi.com/v2/latest_headlines?countries=KR&topic=news&page_size=10`
+    `https://api.newscatcherapi.com/v2/latest_headlines?countries=KR&page_size=10`
   );
-
   getNews();
 };
 
-const getNewsByTopic = async (event) => {
+const getNewsByTopic = (event) => {
   let topic = event.target.textContent.toLowerCase();
+  page = 1;
   url = new URL(
-    `https://api.newscatcherapi.com/v2/latest_headlines?countries=KR&topic=${topic}&page_size=10`
+    `https://api.newscatcherapi.com/v2/latest_headlines?countries=KR&page_size=10&topic=${topic}`
   );
-
   getNews();
-};
-
-const getNewsByKeyword = async () => {
-  let keyword = document.getElementById("search-input").value;
-  url = new URL(
-    `https://api.newscatcherapi.com/v2/search?q=${keyword}&page_size=10`
-  );
-
-  getNews();
-};
-
-const render = () => {
-  let newsHTML = "";
-  newsHTML = news
-    .map((item) => {
-      return `<div class="row news">
-    <div class="col-lg-4">
-      <img
-        class="news-img-size"
-        src="${
-          item.media ||
-          "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRqEWgS0uxxEYJ0PsOb2OgwyWvC0Gjp8NUdPw&usqp=CAU"
-        }"
-      />
-    </div>
-    <div class="col-lg-8">
-      <a class="title" target="_blank" href="${item.link}">${item.title}</a>
-      <p>
-        ${
-          item.summary == null || item.summary == ""
-            ? "내용없음"
-            : item.summary.length > 200
-            ? item.summary.substring(0, 200) + "..."
-            : item.summary
-        }
-      </p>
-      <div>${item.clean_url || "no source"} ${moment(
-        item.published_date
-      ).fromNow()}</div>
-    </div>
-  </div>`;
-    })
-    .join("");
-
-  document.getElementById("news-board").innerHTML = newsHTML;
 };
 
 const openSearchBox = () => {
@@ -113,79 +71,99 @@ const openSearchBox = () => {
   }
 };
 
-const errorRender = (message) => {
-  let errorHTML = `<section class="page_404">
-	<div class="container">
-		<div class="row">	
-		<div class="col-sm-12 ">
-		<div class="col-sm-10 col-sm-offset-1 text-center">
-		<div class="four_zero_four_bg">
-			<h1 class="text-center "></h1>
-		</div>		
-		<div class="contant_box_404">	
-		<a href="" onClick="${getNewsByTopic(news)}" class="link_404">Go to Home</a>
-	</div>
-		</div>
-		</div>
-		</div>
-	</div>
-</section>
-
-<div class="alert alert-danger text-center" role="alert">
-  ${message}
-  </div>`;
-  document.getElementById("news-board").innerHTML = errorHTML;
+const searchNews = () => {
+  let keyword = document.getElementById("search-input").value;
+  page = 1;
+  url = new URL(
+    `https://api.newscatcherapi.com/v2/search?q=${keyword}&page_size=10`
+  );
+  getNews();
 };
 
-const pageNation = () => {
-  let pagenationHTML = "";
-  // total_pages
-  // page
-  //page group
+const render = () => {
+  let resultHTML = articles
+    .map((news) => {
+      return `<div class="news row">
+        <div class="col-lg-4">
+            <img class="news-img"
+                src="${
+                  news.media ||
+                  "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRqEWgS0uxxEYJ0PsOb2OgwyWvC0Gjp8NUdPw&usqp=CAU"
+                }" />
+        </div>
+        <div class="col-lg-8">
+            <a class="title" target="_blank" href="${news.link}">${
+        news.title
+      }</a>
+            <p>${
+              news.summary == null || news.summary == ""
+                ? "내용없음"
+                : news.summary.length > 200
+                ? news.summary.substring(0, 200) + "..."
+                : news.summary
+            }</p>
+            <div>${news.rights || "no source"}  ${moment(
+        news.published_date
+      ).fromNow()}</div>
+        </div>
+    </div>`;
+    })
+    .join("");
+
+  document.getElementById("news-board").innerHTML = resultHTML;
+};
+const renderPagenation = () => {
+  // 1.1~5까지를 보여준다
+  // 2.6~10을 보여준다 => last, first 가필요
+  // 3.만약에 first가 6 이상이면 prev 버튼을 단다
+  // 4.만약에 last가 마지막이 아니라면 next버튼을 단다
+  // 5.마지막이 5개이하이면 last=totalpage이다
+  // 6.페이지가 5개 이하라면 first = 1이다
+  let pagenationHTML = ``;
   let pageGroup = Math.ceil(page / 5);
-  // last
   let last = pageGroup * 5;
-  // first
-  let first = last - 4;
-  // first ~ last
-
-  // total page 3일 경우 3개의 페이지만 프린트 하는 법
-
-  // << >> 버튼 만들기
-
-  pagenationHTML = `<li class="page-item">
-  <a class="page-link" href="#" aria-label="Previous" onClick="moveToPage(${
-    page - 1
-  })">
-    <span aria-hidden="true">&lt;</span>
-  </a>
-</li>`;
-
+  if (last > totalPage) {
+    // 마지막 그룹이 5개 이하이면
+    last = totalPage;
+  }
+  let first = last - 4 <= 0 ? 1 : last - 4; // 첫그룹이 5이하이면
+  if (first >= 6) {
+    pagenationHTML = `<li class="page-item" onclick="pageClick(1)">
+                        <a class="page-link" href='#js-bottom'>&lt;&lt;</a>
+                      </li>
+                      <li class="page-item" onclick="pageClick(${page - 1})">
+                        <a class="page-link" href='#js-bottom'>&lt;</a>
+                      </li>`;
+  }
   for (let i = first; i <= last; i++) {
-    pagenationHTML += `<li class="page-item ${
-      page == i ? "active" : ""
-    }"><a class="page-link" href="#" onClick="moveToPage(${i})">${i}</a></li>`;
+    pagenationHTML += `<li class="page-item ${i == page ? "active" : ""}" >
+                        <a class="page-link" href='#js-bottom' onclick="pageClick(${i})" >${i}</a>
+                       </li>`;
   }
 
-  pagenationHTML += `<li class="page-item">
-  <a class="page-link" href="#" aria-label="Next" onClick="moveToPage(${
-    page + 1
-  })">
-    <span aria-hidden="true">&gt;</span>
-  </a>
-</li>`;
+  if (last < totalPage) {
+    pagenationHTML += `<li class="page-item" onclick="pageClick(${page + 1})">
+                        <a  class="page-link" href='#js-program-detail-bottom'>&gt;</a>
+                       </li>
+                       <li class="page-item" onclick="pageClick(${totalPage})">
+                        <a class="page-link" href='#js-bottom'>&gt;&gt;</a>
+                       </li>`;
+  }
 
   document.querySelector(".pagination").innerHTML = pagenationHTML;
 };
 
-const moveToPage = (pageNum) => {
-  // 1 이동하고 싶은 페이지를 알아야함
+const pageClick = (pageNum) => {
+  //7.클릭이벤트 세팅
   page = pageNum;
-  // 2 이동하고 싶은 페이지를 가지고 api 다시 호출
+  window.scrollTo({ top: 0, behavior: "smooth" });
   getNews();
 };
-
-searchButton.addEventListener("click", getNewsByKeyword);
+const errorRender = (message) => {
+  document.getElementById(
+    "news-board"
+  ).innerHTML = `<h3 class="text-center alert alert-danger mt-1">${message}</h3>`;
+};
 getLatestNews();
 
 const openNav = () => {
