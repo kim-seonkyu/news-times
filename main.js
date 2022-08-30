@@ -22,7 +22,7 @@ const getNews = async () => {
         console.log("A", data);
         page = 0;
         totalPage = 0;
-        renderPagenation();
+        pageNation();
         throw new Error(data.status);
       }
       console.log("B", data);
@@ -30,19 +30,19 @@ const getNews = async () => {
       console.log("articles", articles);
       totalPage = data.total_pages;
       render();
-      renderPagenation();
+      pageNation();
     } else {
       page = 0;
       totalPage = 0;
-      renderPagenation();
+      pageNation();
       throw new Error(data.message);
     }
   } catch (e) {
-    console.log("에러객체", e.name);
+    console.log("error : ", e.name);
     errorRender(e.message);
     page = 0;
     totalPage = 0;
-    renderPagenation();
+    pageNation();
   }
 };
 const getLatestNews = () => {
@@ -112,7 +112,7 @@ const render = () => {
 
   document.getElementById("news-board").innerHTML = resultHTML;
 };
-const renderPagenation = () => {
+const pageNation = () => {
   // 1.1~5까지를 보여준다
   // 2.6~10을 보여준다 => last, first 가필요
   // 3.만약에 first가 6 이상이면 prev 버튼을 단다
@@ -128,24 +128,24 @@ const renderPagenation = () => {
   }
   let first = last - 4 <= 0 ? 1 : last - 4; // 첫그룹이 5이하이면
   if (first >= 6) {
-    pagenationHTML = `<li class="page-item" onclick="pageClick(1)">
+    pagenationHTML = `<li class="page-item" onclick="moveToPage(1)">
                         <a class="page-link" href='#js-bottom'>&lt;&lt;</a>
                       </li>
-                      <li class="page-item" onclick="pageClick(${page - 1})">
+                      <li class="page-item" onclick="moveToPage(${page - 1})">
                         <a class="page-link" href='#js-bottom'>&lt;</a>
                       </li>`;
   }
   for (let i = first; i <= last; i++) {
     pagenationHTML += `<li class="page-item ${i == page ? "active" : ""}" >
-                        <a class="page-link" href='#js-bottom' onclick="pageClick(${i})" >${i}</a>
+                        <a class="page-link" href='#js-bottom' onclick="moveToPage(${i})" >${i}</a>
                        </li>`;
   }
 
   if (last < totalPage) {
-    pagenationHTML += `<li class="page-item" onclick="pageClick(${page + 1})">
+    pagenationHTML += `<li class="page-item" onclick="moveToPage(${page + 1})">
                         <a  class="page-link" href='#js-program-detail-bottom'>&gt;</a>
                        </li>
-                       <li class="page-item" onclick="pageClick(${totalPage})">
+                       <li class="page-item" onclick="moveToPage(${totalPage})">
                         <a class="page-link" href='#js-bottom'>&gt;&gt;</a>
                        </li>`;
   }
@@ -153,7 +153,7 @@ const renderPagenation = () => {
   document.querySelector(".pagination").innerHTML = pagenationHTML;
 };
 
-const pageClick = (pageNum) => {
+const moveToPage = (pageNum) => {
   //7.클릭이벤트 세팅
   page = pageNum;
   window.scrollTo({ top: 0, behavior: "smooth" });
